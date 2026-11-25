@@ -157,5 +157,23 @@ defmodule GigTypstTest do
 
       assert Enum.map(placed, fn [_group | turn] -> turn end) === [[" rotate(-90)"], []]
     end
+
+    test "Giggly draws a label annotated at a place in the data, in the annotation's colour" do
+      svg =
+        %{"x" => [1, 2, 3], "y" => [2.0, 4.0, 3.0]}
+        |> Giggly.Plot.new(%{x: :x, y: :y})
+        |> Giggly.Plot.geom_point()
+        |> Giggly.Plot.annotate(:text,
+          x: 2,
+          y: 3,
+          label: GigTypst.math("x_i^2", inline: true),
+          colour: "#1A2B3C"
+        )
+        |> Giggly.to_svg(width: 480, height: 360)
+        |> IO.iodata_to_binary()
+
+      assert [_group] = Regex.scan(~r/<g transform='translate\([\d.]+,[\d.]+\)'>\n<svg x=/, svg)
+      assert svg =~ ~s(fill="#1a2b3c")
+    end
   end
 end

@@ -47,6 +47,24 @@ A label goes in any `labs/2` title, a scale's or a secondary axis's `name:`, and
 `title:`. The theme decides its size, colour, opacity, font family and face, where it goes and
 how it turns; Typst lays out what is inside it.
 
+A label also goes in a text annotation's `label:`, at a place in the data, one label or a list of
+them, one per annotation:
+
+```elixir
+plot
+|> Giggly.Plot.annotate(:text,
+  x: 2.5,
+  y: 30,
+  label: GigTypst.math("hat(y) = beta_0 + beta_1 x"),
+  size: 5,
+  hjust: 0
+)
+```
+
+The annotation decides its size, colour, alpha, family and face, its angle and its
+justification, which is by the label's whole box: `vjust: 0` sets the bottom of its glyphs on
+the place.
+
 ## Fonts
 
 The theme's family names a font: `""` and `"sans"` are Liberation Sans, which this package
