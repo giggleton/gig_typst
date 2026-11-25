@@ -9,14 +9,11 @@ which goes wherever Giggly takes a title's string.
 
 ## Installation
 
-GigTypst needs Giggly's label protocol, which is not yet released. Until it is, depend on Giggly
-and GigTypst by path:
-
 ```elixir
 def deps do
   [
-    {:giggly, path: "../giggly"},
-    {:gig_typst, path: "../gig_typst"}
+    {:giggly, "~> 0.2.0"},
+    {:gig_typst, "~> 0.1.0"}
   ]
 end
 ```
@@ -132,7 +129,7 @@ Typst keeps the fonts it scanned for one list of directories at a time, so pass 
 - Its lines break where its markup breaks them, never at the theme's line spacing.
 - It is drawn as Typst's outlines, whether `Giggly.to_svg/2` writes text as text or as outlines.
 
-## Licence
+## License
 
 The code is MIT (`LICENSE`). The Liberation Sans fonts in `priv/fonts` are under the SIL Open
 Font License 1.1, Reserved Font Name "Liberation" (`priv/fonts/OFL.txt`); the Lato font in

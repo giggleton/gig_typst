@@ -94,10 +94,10 @@ defmodule GigTypst do
   end
 
   @doc """
-  A scale's labels function setting each break as Typst maths, as R's `label_math()` does:
-  `formula` is handed each break written as text and returns the formula, which `math/2` lays
-  out. `labels: GigTypst.label_math(fn text -> "10^" <> text end)` labels the breaks 1, 2 and 3
-  as 10¹, 10² and 10³.
+  A scale's labels function setting each break as Typst maths: `formula` is handed each break
+  written as text and returns the formula, which `math/2` lays out.
+  `labels: GigTypst.label_math(fn text -> "10^" <> text end)` labels the breaks 1, 2 and 3 as
+  10¹, 10² and 10³.
 
   ## Options
 
