@@ -22,13 +22,12 @@ defmodule GigTypst.MixProject do
     [extra_applications: [:logger]]
   end
 
-  # Giggly is taken by path from the worktree that holds its label protocol until that protocol is
-  # released; a Hex release of this package waits for Giggly's. Scales, which `label_math/2`
-  # writes breaks with, from the same path Giggly takes it.
+  # Giggly is taken by path from its main checkout, which holds the label protocol, until that
+  # protocol is released; a Hex release of this package waits for Giggly's. Scales, which
+  # `label_math/2` writes breaks with, from the same path Giggly takes it.
   defp deps do
     [
-      {:giggly,
-       path: "/home/srowley/repos/giggly/.claude/worktrees/gig-typst-math-plugin-e3f226"},
+      {:giggly, path: "/home/srowley/repos/giggly"},
       {:scales, "~> 0.2.0", path: "/home/srowley/repos/scales"},
       {:typst, "~> 0.4.6"},
       {:credo, "~> 1.7", only: [:dev, :test], runtime: false}
