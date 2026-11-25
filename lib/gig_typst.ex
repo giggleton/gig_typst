@@ -6,8 +6,8 @@ defmodule GigTypst do
   `text/2` and `math/2` each return a `GigTypst.Content`, which goes wherever Giggly takes a
   label another library lays out: any `Giggly.Plot.labs/2` title, a scale's or a secondary axis's
   `name:`, a guide's `title:`, a text or label annotation's `label:`, a scale's `labels:`, which
-  `label_math/2` writes from each break, and a facet's strips, through a `labeller:` function such
-  as `&GigTypst.math/1`.
+  `label_math/2` writes from each break, a facet's strips, through a `labeller:` function such
+  as `&GigTypst.math/1`, and a text or label layer's rows, through `label_with:`.
 
       Giggly.Plot.new(table, %{x: :x, y: :y})
       |> Giggly.Plot.geom_point()

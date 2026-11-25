@@ -263,5 +263,17 @@ defmodule GigTypstTest do
       assert length(Regex.scan(~r/<g transform='translate\([\d.]+,[\d.]+\)'>\n<svg x=/, svg)) ===
                2
     end
+
+    test "Giggly draws a column of formulas as maths through label_with:, one a row" do
+      svg =
+        %{"x" => [1, 2, 3], "y" => [2.0, 4.0, 3.0], "f" => ["x^2", "sqrt(y)", "alpha"]}
+        |> Giggly.Plot.new(%{x: :x, y: :y, label: :f})
+        |> Giggly.Plot.geom_text(label_with: &GigTypst.math/1)
+        |> Giggly.to_svg(width: 480, height: 360)
+        |> IO.iodata_to_binary()
+
+      assert length(Regex.scan(~r/<g transform='translate\([\d.]+,[\d.]+\)'>\n<svg x=/, svg)) ===
+               3
+    end
   end
 end

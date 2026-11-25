@@ -101,6 +101,18 @@ A function writing each label into a formula does what R's `label_bquote` does:
 Giggly refuses a Typst label where its labeller writes text with it: `:both` or `:context`
 naming the facet beside it, `:wrap`, and `multi_line: false` joining a panel's labels.
 
+A column of formulas draws as maths through `label_with:` on `geom_text/3` and `geom_label/3`,
+as R's `parse = TRUE` parses one:
+
+```elixir
+plot
+|> Giggly.Plot.geom_text(%{label: :formula}, label_with: &GigTypst.math/1)
+```
+
+Each row's label is handed over as text as the plot is drawn, a number as R writes it and a
+missing one never. The legend's keys stay the letter "a", as R's do, and Giggly refuses a
+`lineheight:` or the `:symbol` face beside it.
+
 ## Fonts
 
 The theme's family names a font: `""` and `"sans"` are Liberation Sans, which this package
