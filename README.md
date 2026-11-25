@@ -87,6 +87,20 @@ discrete scale's levels, already text, are handed over as they are, so `"alpha"`
 axis's labels hold a Typst label, the strings beside it are boxed by their glyphs, as R boxes the
 strings of an expression vector.
 
+A facet's strips take labels from a `labeller:` function or map, so `&GigTypst.math/1` sets each
+strip as maths, as R's `label_parsed` parses it:
+
+```elixir
+plot
+|> Giggly.Plot.facet_wrap(:term, labeller: &GigTypst.math/1)
+```
+
+A function writing each label into a formula does what R's `label_bquote` does:
+`labeller: fn order -> GigTypst.math("x^" <> order) end`.
+
+Giggly refuses a Typst label where its labeller writes text with it: `:both` or `:context`
+naming the facet beside it, `:wrap`, and `multi_line: false` joining a panel's labels.
+
 ## Fonts
 
 The theme's family names a font: `""` and `"sans"` are Liberation Sans, which this package

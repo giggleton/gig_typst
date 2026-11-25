@@ -250,5 +250,18 @@ defmodule GigTypstTest do
       assert length(Regex.scan(~r/<g transform='translate\([\d.]+,[\d.]+\)'>\n<svg x=/, svg)) ===
                5
     end
+
+    test "Giggly draws a facet's strips from a labeller giving Typst maths, one a strip" do
+      svg =
+        %{"x" => [1, 2, 3], "y" => [2.0, 4.0, 3.0], "g" => ["alpha", "beta", "beta"]}
+        |> Giggly.Plot.new(%{x: :x, y: :y})
+        |> Giggly.Plot.geom_point()
+        |> Giggly.Plot.facet_wrap(:g, labeller: &GigTypst.math/1)
+        |> Giggly.to_svg(width: 480, height: 360)
+        |> IO.iodata_to_binary()
+
+      assert length(Regex.scan(~r/<g transform='translate\([\d.]+,[\d.]+\)'>\n<svg x=/, svg)) ===
+               2
+    end
   end
 end
