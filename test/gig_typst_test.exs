@@ -139,6 +139,47 @@ defmodule GigTypstTest do
     end
   end
 
+  describe "label_math/2" do
+    defp sources(labels), do: Enum.map(labels, fn content -> content && content.source end)
+
+    test "numbers are written together as a Giggly axis writes them, then made formulas" do
+      labeller = GigTypst.label_math(fn text -> "10^" <> text end)
+      assert sources(labeller.([0.0, 0.25, 0.5])) === ["10^0.00", "10^0.25", "10^0.50"]
+      assert sources(labeller.([1, nil, 3])) === ["10^1", nil, "10^3"]
+    end
+
+    test "a format writes the breaks, a break it gives no text left with no label" do
+      format = fn breaks ->
+        Enum.map(breaks, fn break -> if break > 1, do: Integer.to_string(round(break)) end)
+      end
+
+      labeller = GigTypst.label_math(fn text -> "x_" <> text end, format: format, inline: true)
+      [none, label] = labeller.([1.0, 2.0])
+
+      assert {none, label.source, label.mode} === {nil, "x_2", :inline_math}
+    end
+
+    test "a format that is no function, or gives no text for each break, is refused" do
+      assert_raise ArgumentError, ~r/:format to be a function of one argument, got: "%d"/, fn ->
+        GigTypst.label_math(fn text -> text end, format: "%d")
+      end
+
+      labeller = GigTypst.label_math(fn text -> text end, format: fn _breaks -> ["one"] end)
+
+      assert_raise ArgumentError, ~r/breaks \[1.0, 2.0\], got: \["one"\]/, fn ->
+        labeller.([1.0, 2.0])
+      end
+    end
+
+    test "a break neither a number nor a string needs a format" do
+      labeller = GigTypst.label_math(fn text -> text end)
+
+      assert_raise ArgumentError, ~r/writes numbers or strings, got: :a; give :format/, fn ->
+        labeller.(["b", :a])
+      end
+    end
+  end
+
   describe "a plot titled by Typst" do
     test "Giggly draws each label's markup, the y axis's turned" do
       svg =
@@ -174,6 +215,40 @@ defmodule GigTypstTest do
 
       assert [_group] = Regex.scan(~r/<g transform='translate\([\d.]+,[\d.]+\)'>\n<svg x=/, svg)
       assert svg =~ ~s(fill="#1a2b3c")
+    end
+
+    test "Giggly draws a boxed label annotated in the data on its box, the label after it" do
+      svg =
+        %{"x" => [1, 2, 3], "y" => [2.0, 4.0, 3.0]}
+        |> Giggly.Plot.new(%{x: :x, y: :y})
+        |> Giggly.Plot.geom_point()
+        |> Giggly.Plot.annotate(:label,
+          x: 2,
+          y: 3,
+          label: GigTypst.math("x_i^2"),
+          fill: "#FFEEDD"
+        )
+        |> Giggly.to_svg(width: 480, height: 360)
+        |> IO.iodata_to_binary()
+
+      assert svg =~ ~r/<polygon [^>]*fill: #FFEEDD;[^>]*\/>\n<g transform='translate/
+    end
+
+    test "Giggly draws a scale's labels from label_math/2, one formula a break, on an axis and a legend" do
+      svg =
+        %{"x" => [1, 2, 3], "y" => [2.0, 4.0, 3.0], "g" => ["alpha", "beta", "alpha"]}
+        |> Giggly.Plot.new(%{x: :x, y: :y, colour: :g})
+        |> Giggly.Plot.geom_point()
+        |> Giggly.Plot.scale_x_continuous(
+          breaks: [1, 2, 3],
+          labels: GigTypst.label_math(fn text -> "x_" <> text end)
+        )
+        |> Giggly.Plot.scale_color_discrete(labels: GigTypst.label_math(fn text -> text end))
+        |> Giggly.to_svg(width: 480, height: 360)
+        |> IO.iodata_to_binary()
+
+      assert length(Regex.scan(~r/<g transform='translate\([\d.]+,[\d.]+\)'>\n<svg x=/, svg)) ===
+               5
     end
   end
 end

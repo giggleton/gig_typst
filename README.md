@@ -63,7 +63,29 @@ plot
 
 The annotation decides its size, colour, alpha, family and face, its angle and its
 justification, which is by the label's whole box: `vjust: 0` sets the bottom of its glyphs on
-the place.
+the place. `annotate(:label, ...)` sets it on a box, as `geom_label` boxes a string, the box
+the label's own padded on every side.
+
+A scale's `labels:` takes labels too, in its list or map, or from a function.
+`GigTypst.label_math/2`, R's `label_math()`, makes that function: it writes each break as text,
+as a Giggly axis writes its own, hands it to yours, and sets what yours returns as maths.
+
+```elixir
+plot
+|> Giggly.Plot.scale_x_log10(
+  labels:
+    GigTypst.label_math(fn text -> "10^" <> text end,
+      format: fn breaks -> breaks |> Enum.map(&:math.log10/1) |> Scales.Labels.plain() end
+    )
+)
+|> Giggly.Plot.scale_y_continuous(labels: GigTypst.label_math(fn text -> "y_" <> text end))
+|> Giggly.Plot.scale_color_discrete(labels: GigTypst.label_math(fn text -> text end))
+```
+
+`format:` takes any function writing the breaks as text, `Scales.Labels`' among them; a
+discrete scale's levels, already text, are handed over as they are, so `"alpha"` is α. Where an
+axis's labels hold a Typst label, the strings beside it are boxed by their glyphs, as R boxes the
+strings of an expression vector.
 
 ## Fonts
 
